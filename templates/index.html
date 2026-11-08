@@ -1,0 +1,324 @@
+
+{% extends "base.html" %}
+
+{% block title %}Blaze Desk | Fire Emergency Management{% endblock %}
+
+{% block extra_css %}
+<style>
+.blaze-home {
+    background: #111416;
+    color: #f5f6f7;
+    min-height: 75vh;
+    font-family: Arial, sans-serif;
+}
+
+.blaze-hero {
+    position: relative;
+    overflow: hidden;
+    min-height: 490px;
+    padding: 85px 7%;
+    display: flex;
+    align-items: center;
+    background:
+        radial-gradient(ellipse at 85% 50%, rgba(225, 91, 30, .16), transparent 40%),
+        linear-gradient(115deg, #111416 0%, #191d20 65%, #202020 100%);
+    border: 1px solid #292d30;
+    border-radius: 8px;
+}
+
+.blaze-hero::after {
+    content: "";
+    position: absolute;
+    right: -100px;
+    top: -130px;
+    width: 430px;
+    height: 430px;
+    border: 1px solid rgba(239, 111, 47, .12);
+    border-radius: 50%;
+    box-shadow:
+        0 0 0 45px rgba(239, 111, 47, .025),
+        0 0 0 90px rgba(239, 111, 47, .02);
+    pointer-events: none;
+}
+
+.blaze-content {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+}
+
+.blaze-eyebrow {
+    color: #f07835;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    margin-bottom: 25px;
+}
+
+.blaze-hero h1 {
+    color: #fff;
+    font-size: clamp(38px, 5vw, 65px);
+    line-height: 1.08;
+    letter-spacing: -2px;
+    font-weight: 800;
+    margin: 0 0 22px;
+}
+
+.blaze-hero h1 span {
+    color: #ed762f;
+}
+
+.blaze-description {
+    color: #aeb5bb;
+    font-size: 15px;
+    line-height: 1.9;
+    max-width: 540px;
+    margin-bottom: 32px;
+}
+
+.blaze-actions {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    flex-wrap: wrap;
+}
+
+.blaze-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 25px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .7px;
+    text-decoration: none;
+    transition: .2s ease;
+}
+
+.blaze-primary {
+    background: #ed702d;
+    color: #fff;
+    border: 1px solid #ed702d;
+}
+
+.blaze-primary:hover {
+    background: #cf581c;
+    color: #fff;
+}
+
+.blaze-secondary {
+    background: transparent;
+    color: #fff;
+    border: 1px solid #565d63;
+}
+
+.blaze-secondary:hover {
+    border-color: #ed702d;
+    color: #ed702d;
+}
+
+.blaze-divider {
+    height: 1px;
+    background: #303538;
+    margin: 0;
+}
+
+.blaze-features {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    background: #191d20;
+    border: 1px solid #292e32;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+}
+
+.blaze-feature {
+    padding: 25px 28px;
+    border-right: 1px solid #303538;
+}
+
+.blaze-feature:last-child {
+    border-right: none;
+}
+
+.blaze-feature h3 {
+    color: #f07835;
+    font-size: 12px;
+    letter-spacing: 1px;
+    margin: 0 0 9px;
+}
+
+.blaze-feature p {
+    color: #9da6ad;
+    font-size: 12px;
+    line-height: 1.8;
+    margin: 0;
+}
+
+.blaze-notice {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: #201c19;
+    border: 1px solid #493126;
+    border-left: 3px solid #ed702d;
+    padding: 17px 20px;
+    margin-top: 22px;
+    border-radius: 4px;
+}
+
+.blaze-notice strong {
+    display: block;
+    color: #f08a4c;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.blaze-notice p {
+    color: #b7a99f;
+    font-size: 11px;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.blaze-footer {
+    text-align: center;
+    padding: 25px 10px;
+    color: #727b82;
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+
+@media(max-width: 650px) {
+    .blaze-hero {
+        padding: 60px 25px;
+        min-height: 420px;
+    }
+
+    .blaze-hero h1 {
+        letter-spacing: -1px;
+    }
+
+    .blaze-features {
+        grid-template-columns: 1fr;
+    }
+
+    .blaze-feature {
+        border-right: none;
+        border-bottom: 1px solid #303538;
+    }
+
+    .blaze-feature:last-child {
+        border-bottom: none;
+    }
+
+    .blaze-button {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="blaze-home">
+
+    <section class="blaze-hero">
+
+        <div class="blaze-content">
+
+            <div class="blaze-eyebrow">
+                FIRE LINE / EMERGENCY RESPONSE SYSTEM
+            </div>
+
+            <h1>
+                Every Second<br>
+                Matters in a<br>
+                <span>Fire Emergency.</span>
+            </h1>
+
+            <p class="blaze-description">
+                A centralized fire incident reporting and response
+                management platform designed to streamline emergency
+                reporting, coordinate response teams and improve
+                incident management.
+            </p>
+
+            <div class="blaze-actions">
+
+                <a href="{{ url_for('report_incident') }}"
+                   class="blaze-button blaze-primary">
+                    REPORT FIRE &nbsp; →
+                </a>
+
+                {% if session.get('role') == 'admin' %}
+
+                <a href="{{ url_for('dispatch') }}"
+                   class="blaze-button blaze-secondary">
+                    DISPATCH CENTRE
+                </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <section class="blaze-features">
+
+        <div class="blaze-feature">
+            <h3>01 / INCIDENT REPORTING</h3>
+            <p>
+                Submit fire incidents with relevant location,
+                contact and emergency information.
+            </p>
+        </div>
+
+        <div class="blaze-feature">
+            <h3>02 / RESPONSE COORDINATION</h3>
+            <p>
+                Organize response teams and manage emergency
+                assignments through a central platform.
+            </p>
+        </div>
+
+        <div class="blaze-feature">
+            <h3>03 / INCIDENT MONITORING</h3>
+            <p>
+                Monitor reported incidents, track their
+                progress and maintain response records.
+            </p>
+        </div>
+
+    </section>
+
+
+    <section class="blaze-notice">
+
+        <div>
+            <strong>IMPORTANT EMERGENCY NOTICE</strong>
+
+            <p>
+                This platform is an incident management system
+                and is not monitored as an emergency hotline.
+                For an active fire emergency, contact the
+                appropriate official emergency service immediately.
+            </p>
+        </div>
+
+    </section>
+
+
+    <footer class="blaze-footer">
+        FIRELINE &nbsp; | &nbsp; FIRE INCIDENT REPORTING
+        AND RESPONSE MANAGEMENT SYSTEM
+    </footer>
+
+</div>
+
+{% endblock %}

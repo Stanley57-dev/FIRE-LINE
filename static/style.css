@@ -1,0 +1,68 @@
+:root { font-family: Arial, sans-serif; color: #202a35; background: #f4f6f8; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+.topbar { background: #172b3a; color: white; padding: 16px 5%; display:flex; justify-content:space-between; gap:20px; align-items:center; flex-wrap:wrap; }
+.brand { color:white; font-weight:700; text-decoration:none; }
+nav { display:flex; gap:18px; flex-wrap:wrap; }
+nav a { color:#eaf1f5; text-decoration:none; }
+.container { width:min(1050px, 92%); margin:32px auto; min-height:70vh; }
+.hero { background:white; padding:56px 7%; border-radius:12px; box-shadow:0 3px 16px #15253612; }
+.hero h1 { font-size:clamp(2rem,5vw,3.2rem); margin:10px 0; }
+.eyebrow { color:#a23a2b; letter-spacing:2px; font-weight:bold; }
+.button { display:inline-block; background:#a33327; color:white; border:0; padding:12px 18px; border-radius:6px; text-decoration:none; cursor:pointer; font-weight:bold; }
+.panel { background:white; padding:24px; border-radius:10px; max-width:720px; box-shadow:0 2px 12px #15253610; }
+.narrow { max-width:440px; }
+label { display:block; margin:16px 0; font-weight:600; }
+input, select, textarea { display:block; width:100%; margin-top:7px; padding:11px; border:1px solid #cbd3da; border-radius:5px; font:inherit; }
+.notice { padding:13px 16px; border-radius:6px; margin:16px 0; background:#e7edf2; }
+.notice.success { background:#e3f4e8; color:#155b2c; }
+.notice.error, .notice.warning { background:#fff0df; color:#7b3b0a; }
+.stat { background:white; border-radius:9px; padding:20px; display:flex; justify-content:space-between; max-width:360px; }
+.stat strong { font-size:2rem; }
+.chips { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 24px; }
+.chips span { background:#e6ebef; padding:8px 12px; border-radius:20px; }
+.search { display:flex; gap:8px; max-width:700px; align-items:center; margin:20px 0; }
+.search input { margin:0; }
+.table-wrap { overflow-x:auto; background:white; border-radius:8px; }
+table { width:100%; border-collapse:collapse; min-width:700px; }
+th, td { text-align:left; padding:12px; border-bottom:1px solid #e5e9ec; }
+th { background:#eaf0f3; }
+footer { text-align:center; padding:22px; color:#66737d; font-size:.9rem; }
+@media(max-width:600px) { .topbar { align-items:flex-start; } .search { display:block; } .search .button { margin-top:8px; } }
+
+
+/* BLAZE DESK HOMEPAGE BACKGROUND FIX */
+
+html,
+body {
+    background: #111416 !important;
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    color: #f5f6f7;
+}
+
+main,
+main.container,
+.container {
+    background: transparent;
+}
+
+.blaze-home {
+    background: #111416 !important;
+    width: 100%;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+}
+
+.blaze-hero {
+    border-radius: 0;
+}
+
+.blaze-features {
+    border-radius: 0;
+}

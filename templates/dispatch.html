@@ -1,0 +1,980 @@
+
+{% extends "base.html" %}
+
+{% block title %}Dispatch Management | FIRE LINE{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ==============================
+   FIRE LINE DISPATCH MANAGEMENT
+============================== */
+
+.dispatch-page {
+    color: #e9edf1;
+    padding: 25px 0 45px;
+}
+
+.dispatch-page * {
+    box-sizing: border-box;
+}
+
+/* HEADER */
+.dispatch-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 28px;
+}
+
+.dispatch-heading h1 {
+    font-size: 28px;
+    font-weight: 750;
+    color: #ffffff;
+    margin: 0 0 8px;
+}
+
+.dispatch-heading p {
+    font-size: 13px;
+    color: #aab4be;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.dispatch-eyebrow {
+    color: #ff762b;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+.control-label {
+    background: #292f34;
+    color: #ff914f;
+    border: 1px solid #69432e;
+    padding: 11px 16px;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .8px;
+}
+
+/* STATISTICS */
+.dispatch-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 17px;
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    background: #20272d;
+    border: 1px solid #343e47;
+    border-left: 4px solid #ff762b;
+    border-radius: 8px;
+    padding: 21px;
+}
+
+.stat-card.blue {
+    border-left-color: #548bd0;
+}
+
+.stat-card.green {
+    border-left-color: #35a77a;
+}
+
+.stat-card small {
+    display: block;
+    color: #aab4be;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .8px;
+}
+
+.stat-card h2 {
+    font-size: 31px;
+    margin: 12px 0 0;
+    color: #ffffff;
+    font-weight: 750;
+}
+
+/* MAIN LAYOUT */
+.dispatch-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 310px;
+    gap: 20px;
+    align-items: start;
+}
+
+.dispatch-panel {
+    background: #20272d;
+    border: 1px solid #343e47;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.panel-header {
+    padding: 17px 20px;
+    border-bottom: 1px solid #37414a;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.panel-header h2 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+}
+
+.panel-body {
+    padding: 18px;
+}
+
+/* FILTER BUTTONS */
+.filter-buttons {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+.filter-buttons button {
+    background: #2b343c;
+    border: 1px solid #46515b;
+    color: #c1cbd3;
+    padding: 7px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.filter-buttons button:hover {
+    border-color: #ff762b;
+    color: #ffffff;
+}
+
+.filter-buttons button.active {
+    background: #ff762b;
+    border-color: #ff762b;
+    color: #171b1e;
+}
+
+/* TABLE */
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.dispatch-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 760px;
+}
+
+.dispatch-table th {
+    background: #171d22;
+    color: #ff914f;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 14px 12px;
+    border-bottom: 1px solid #414b54;
+    white-space: nowrap;
+}
+
+.dispatch-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #343e47;
+    color: #d5dce2;
+    font-size: 12px;
+    vertical-align: top;
+}
+
+.dispatch-table tbody tr:hover {
+    background: #29323a;
+}
+
+.dispatch-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.incident-id {
+    color: #ff914f;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.incident-type {
+    color: #ffffff;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.secondary-text {
+    color: #9ba7b2;
+    font-size: 11px;
+    display: block;
+    margin-top: 5px;
+}
+
+/* STATUS BADGES */
+.status-badge {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.status-badge.pending {
+    background: #4b3923;
+    color: #ffc16d;
+}
+
+.status-badge.review {
+    background: #263d58;
+    color: #91baff;
+}
+
+.status-badge.assigned {
+    background: #293f55;
+    color: #8bc5ff;
+}
+
+.status-badge.resolved {
+    background: #214334;
+    color: #83d8a8;
+}
+
+.status-badge.closed {
+    background: #343c43;
+    color: #c1cbd3;
+}
+
+/* DISPATCH FORM */
+.dispatch-form {
+    min-width: 185px;
+}
+
+.dispatch-form label {
+    display: block;
+    color: #c3cdd5;
+    font-size: 10px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: .3px;
+}
+
+.dispatch-form select,
+.dispatch-form textarea {
+    width: 100%;
+    background: #171d22;
+    border: 1px solid #46515b;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 11px;
+    color: #f1f3f5;
+    margin-bottom: 10px;
+    outline: none;
+}
+
+.dispatch-form select:focus,
+.dispatch-form textarea:focus {
+    border-color: #ff762b;
+    box-shadow: 0 0 0 2px rgba(255,118,43,.12);
+}
+
+.dispatch-form select option {
+    background: #20272d;
+    color: #ffffff;
+}
+
+.dispatch-form textarea {
+    min-height: 58px;
+    resize: vertical;
+}
+
+.dispatch-form textarea::placeholder {
+    color: #85919b;
+}
+
+.dispatch-btn {
+    display: block;
+    width: 100%;
+    background: #ff762b;
+    color: #171b1e;
+    border: none;
+    border-radius: 5px;
+    padding: 11px 8px;
+    font-size: 10px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+.dispatch-btn:hover {
+    background: #e9631d;
+}
+
+.assigned-team {
+    color: #75d69d;
+    font-weight: 700;
+}
+
+.closed-label {
+    color: #a4afb8;
+    font-size: 11px;
+}
+
+/* RESPONSE TEAM TABLE */
+.team-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.team-table th {
+    text-align: left;
+    background: #171d22;
+    color: #ff914f;
+    font-size: 10px;
+    text-transform: uppercase;
+    padding: 12px 9px;
+    border-bottom: 1px solid #414b54;
+}
+
+.team-table td {
+    padding: 13px 9px;
+    font-size: 11px;
+    color: #d5dce2;
+    border-bottom: 1px solid #343e47;
+}
+
+.team-table tr:last-child td {
+    border-bottom: none;
+}
+
+.team-name {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.available-label {
+    color: #83d8a8;
+    background: #214334;
+    padding: 5px 8px;
+    display: inline-block;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+/* EMPTY STATES */
+.empty-state {
+    padding: 35px 15px;
+    text-align: center;
+    color: #a3afb9;
+    font-size: 12px;
+}
+
+.empty-state h3 {
+    font-size: 14px;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+/* SIDEBAR */
+.sidebar-note {
+    background: #19232c;
+    border: 1px solid #394b5b;
+    border-left: 3px solid #ff762b;
+    border-radius: 5px;
+    padding: 15px;
+    color: #b8c3cc;
+    font-size: 11px;
+    line-height: 1.8;
+}
+
+.sidebar-note strong {
+    display: block;
+    color: #ff914f;
+    margin-bottom: 6px;
+    font-size: 12px;
+}
+
+/* TABLET */
+@media(max-width: 1050px) {
+    .dispatch-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* MOBILE */
+@media(max-width: 650px) {
+
+    .dispatch-page {
+        padding: 18px 0 30px;
+    }
+
+    .dispatch-heading {
+        align-items: flex-start;
+        margin-bottom: 20px;
+    }
+
+    .dispatch-heading h1 {
+        font-size: 23px;
+    }
+
+    .control-label {
+        font-size: 9px;
+        padding: 9px 11px;
+    }
+
+    /* MOBILE STATISTICS */
+    .dispatch-stats {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+
+    .stat-card {
+        padding: 15px;
+    }
+
+    .stat-card h2 {
+        font-size: 25px;
+        margin-top: 7px;
+    }
+
+    .dispatch-layout {
+        display: block;
+    }
+
+    .dispatch-panel {
+        margin-bottom: 15px;
+        border-radius: 8px;
+    }
+
+    .panel-header {
+        padding: 14px;
+        align-items: flex-start;
+    }
+
+    .panel-body {
+        padding: 12px;
+    }
+
+    /* MOBILE FILTERS */
+    .filter-buttons {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .filter-buttons button {
+        padding: 9px 5px;
+        font-size: 10px;
+    }
+
+    /* INCIDENT TABLE TO CARDS */
+    .dispatch-table {
+        min-width: 0;
+        display: block;
+    }
+
+    .dispatch-table thead {
+        display: none;
+    }
+
+    .dispatch-table tbody {
+        display: block;
+        width: 100%;
+    }
+
+    .dispatch-table tbody tr.incident-row {
+        display: block;
+        background: #20272d;
+        border: 1px solid #3b4650;
+        border-left: 3px solid #ff762b;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 13px;
+        box-shadow: 0 4px 12px rgba(0,0,0,.18);
+    }
+
+    .dispatch-table tbody td {
+        display: block;
+        width: 100%;
+        padding: 9px 0;
+        border-bottom: 1px solid #343e47;
+        color: #d5dce2;
+        font-size: 12px;
+        overflow-wrap: anywhere;
+    }
+
+    .dispatch-table tbody td:last-child {
+        border-bottom: none;
+        padding-bottom: 2px;
+    }
+
+    .dispatch-table tbody tr:hover {
+        background: #20272d;
+    }
+
+    .incident-id {
+        color: #ff914f;
+        font-size: 13px;
+    }
+
+    .incident-type {
+        color: #ffffff;
+        font-size: 13px;
+    }
+
+    .secondary-text {
+        color: #aab4be;
+    }
+
+    .assigned-team {
+        color: #83d8a8;
+    }
+
+    /* MOBILE DISPATCH FORM */
+    .dispatch-form {
+        min-width: 0;
+        width: 100%;
+        margin-top: 8px;
+    }
+
+    .dispatch-form select,
+    .dispatch-form textarea {
+        font-size: 12px;
+        padding: 11px;
+    }
+
+    .dispatch-btn {
+        padding: 13px;
+        font-size: 11px;
+    }
+
+    /* MOBILE TEAM REGISTER */
+    .team-table {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .team-table th {
+        background: #171d22;
+        color: #ff914f;
+    }
+
+    .team-table td {
+        padding: 12px 8px;
+        color: #d5dce2;
+        border-bottom-color: #343e47;
+    }
+
+    .available-label {
+        background: #214334;
+        color: #83d8a8;
+    }
+
+    /* MOBILE GUIDELINES */
+    .sidebar-note {
+        background: #19232c;
+        border: 1px solid #394b5b;
+        border-left: 3px solid #ff762b;
+        color: #b8c3cc;
+        padding: 13px;
+        font-size: 12px;
+        line-height: 1.7;
+    }
+
+    .sidebar-note strong {
+        color: #ff914f;
+    }
+
+    .empty-state {
+        padding: 25px 10px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="dispatch-page">
+
+    <!-- PAGE HEADER -->
+    <div class="dispatch-heading">
+        <div>
+            <div class="dispatch-eyebrow">FIRE LINE / OPERATIONS</div>
+            <h1>Dispatch Management</h1>
+            <p>Emergency incident monitoring and response team coordination.</p>
+        </div>
+
+        <div class="control-label">
+            DISPATCH CONTROL CENTRE
+        </div>
+    </div>
+
+    <!-- STATISTICS -->
+    <div class="dispatch-stats">
+
+        <div class="stat-card">
+            <small>UNASSIGNED INCIDENTS</small>
+            <h2>{{ unassigned_count }}</h2>
+        </div>
+
+        <div class="stat-card blue">
+            <small>ASSIGNED INCIDENTS</small>
+            <h2>{{ active_count }}</h2>
+        </div>
+
+        <div class="stat-card green">
+            <small>AVAILABLE RESPONSE TEAMS</small>
+            <h2>{{ available_count }}</h2>
+        </div>
+
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="dispatch-layout">
+
+        <section>
+
+            <div class="dispatch-panel">
+
+                <div class="panel-header">
+                    <h2>Incident Dispatch Register</h2>
+
+                    <div class="filter-buttons">
+
+                        <button type="button"
+                                class="active"
+                                onclick="filterIncidents('all', this)">
+                            All
+                        </button>
+
+                        <button type="button"
+                                onclick="filterIncidents('unassigned', this)">
+                            Unassigned
+                        </button>
+
+                        <button type="button"
+                                onclick="filterIncidents('assigned', this)">
+                            Assigned
+                        </button>
+
+                    </div>
+                </div>
+
+                <div class="panel-body">
+
+                    {% if incidents %}
+
+                    <div class="table-wrapper">
+
+                        <table class="dispatch-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Reference</th>
+                                    <th>Incident Details</th>
+                                    <th>Location / Reporter</th>
+                                    <th>Date Reported</th>
+                                    <th>Status</th>
+                                    <th>Assigned Team / Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                {% for incident in incidents %}
+
+                                <tr class="incident-row"
+                                    data-status="{% if incident.status == 'Assigned' %}assigned{% elif incident.status in ['Resolved', 'Closed'] %}closed{% else %}unassigned{% endif %}">
+
+                                    <td>
+                                        <span class="incident-id">
+                                            FIR-{{ "%05d"|format(incident.id) }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="incident-type">
+                                            {{ incident.incident_type }}
+                                        </span>
+
+                                        <span class="secondary-text">
+                                            {{ incident.description|truncate(85) }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        {{ incident.location }}
+
+                                        <span class="secondary-text">
+                                            {{ incident.reporter_name }}
+                                        </span>
+
+                                        <span class="secondary-text">
+                                            {{ incident.phone }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        {{ incident.created_at }}
+                                    </td>
+
+                                    <td>
+
+                                        {% if incident.status == 'Pending' %}
+                                            <span class="status-badge pending">Pending</span>
+
+                                        {% elif incident.status == 'Under Review' %}
+                                            <span class="status-badge review">Under Review</span>
+
+                                        {% elif incident.status == 'Assigned' %}
+                                            <span class="status-badge assigned">Assigned</span>
+
+                                        {% elif incident.status == 'Resolved' %}
+                                            <span class="status-badge resolved">Resolved</span>
+
+                                        {% elif incident.status == 'Closed' %}
+                                            <span class="status-badge closed">Closed</span>
+
+                                        {% else %}
+                                            <span class="status-badge">{{ incident.status }}</span>
+                                        {% endif %}
+
+                                    </td>
+
+                                    <td>
+
+                                        {% if incident.team_name %}
+
+                                            <span class="assigned-team">
+                                                {{ incident.team_name }}
+                                            </span>
+
+                                            <span class="secondary-text">
+                                                {{ incident.team_station }}
+                                            </span>
+
+                                        {% elif incident.status in ['Resolved', 'Closed'] %}
+
+                                            <span class="closed-label">
+                                                No active assignment
+                                            </span>
+
+                                        {% else %}
+
+                                            {% if available_teams %}
+
+                                            <form method="POST" class="dispatch-form">
+
+                                                <input type="hidden"
+                                                       name="incident_id"
+                                                       value="{{ incident.id }}">
+
+                                                <label>RESPONSE TEAM</label>
+
+                                                <select name="team_id" required>
+                                                    <option value="">Select team</option>
+
+                                                    {% for team in available_teams %}
+                                                    <option value="{{ team.id }}">
+                                                        {{ team.team_name }}
+                                                        ({{ team.available_members }} available)
+                                                    </option>
+                                                    {% endfor %}
+
+                                                </select>
+
+                                                <label>DISPATCH INSTRUCTIONS</label>
+
+                                                <textarea
+                                                    name="assignment_notes"
+                                                    placeholder="Enter operational instructions..."></textarea>
+
+                                                <button type="submit" class="dispatch-btn">
+                                                    CONFIRM DISPATCH
+                                                </button>
+
+                                            </form>
+
+                                            {% else %}
+
+                                            <span class="closed-label">
+                                                No available teams
+                                            </span>
+
+                                            {% endif %}
+
+                                        {% endif %}
+
+                                    </td>
+
+                                </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    {% else %}
+
+                    <div class="empty-state">
+                        <h3>No incidents recorded</h3>
+                        <p>New incident reports will appear in this register.</p>
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- SIDEBAR -->
+        <aside>
+
+            <div class="dispatch-panel">
+
+                <div class="panel-header">
+                    <h2>Response Team Register</h2>
+                </div>
+
+                <div class="panel-body">
+
+                    {% if available_teams %}
+
+                    <div class="table-wrapper">
+
+                        <table class="team-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Team / Station</th>
+                                    <th>Available</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                {% for team in available_teams %}
+
+                                <tr>
+                                    <td>
+                                        <span class="team-name">
+                                            {{ team.team_name }}
+                                        </span>
+
+                                        <span class="secondary-text">
+                                            {{ team.station }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="available-label">
+                                            {{ team.available_members }}
+                                        </span>
+                                    </td>
+                                </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    {% else %}
+
+                    <div class="empty-state">
+                        No available response teams.
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <div class="dispatch-panel">
+
+                <div class="panel-header">
+                    <h2>Dispatch Guidelines</h2>
+                </div>
+
+                <div class="panel-body">
+
+                    <div class="sidebar-note">
+                        <strong>Operational Notice</strong>
+
+                        Assign only active response teams with available
+                        firefighters. Ensure that dispatch instructions
+                        contain relevant information about the incident
+                        location and emergency situation.
+                    </div>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+    </div>
+
+</div>
+
+<script>
+function filterIncidents(status, button) {
+
+    const rows = document.querySelectorAll(".incident-row");
+
+    rows.forEach(row => {
+
+        const rowStatus = row.dataset.status;
+
+        if (status === "all") {
+            row.style.display = "";
+        }
+
+        else if (status === "unassigned") {
+            row.style.display =
+                rowStatus === "unassigned" ? "" : "none";
+        }
+
+        else {
+            row.style.display =
+                rowStatus === "assigned" ? "" : "none";
+        }
+
+    });
+
+    document.querySelectorAll(".filter-buttons button")
+        .forEach(btn => btn.classList.remove("active"));
+
+    button.classList.add("active");
+}
+</script>
+
+{% endblock %}

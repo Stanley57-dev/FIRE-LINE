@@ -1,0 +1,576 @@
+
+{% extends "base.html" %}
+
+{% block title %}Incident Detail | BLAZE DESK{% endblock %}
+
+{% block content %}
+
+<section class="incident-detail-page">
+
+    <div class="detail-header">
+        <div>
+            <p class="detail-eyebrow">INCIDENT MANAGEMENT / RECORD DETAILS</p>
+            <h1>Incident FIR-{{ "%05d"|format(incident.id) }}</h1>
+            <p class="detail-subtitle">Review incident information, update status and dispatch response teams.</p>
+        </div>
+
+        <div class="detail-reference">
+            <span>INCIDENT REFERENCE</span>
+            <strong>FIR-{{ "%05d"|format(incident.id) }}</strong>
+        </div>
+    </div>
+
+    <!-- INCIDENT INFORMATION -->
+    <div class="detail-main-panel">
+        <div class="detail-panel-heading">
+            <div>
+                <span class="detail-section-label">INCIDENT INFORMATION</span>
+                <h2>Reported Incident Details</h2>
+            </div>
+
+            <span class="detail-status
+                {% if incident.status == 'Pending' %}detail-pending
+                {% elif incident.status == 'Under Review' %}detail-review
+                {% elif incident.status == 'Assigned' %}detail-assigned
+                {% elif incident.status == 'Resolved' %}detail-resolved
+                {% elif incident.status == 'Closed' %}detail-closed
+                {% else %}detail-other{% endif %}">
+                {{ incident.status }}
+            </span>
+        </div>
+
+        <div class="incident-information-grid">
+
+            <div class="information-item">
+                <span class="information-label">Reporter Name</span>
+                <strong>{{ incident.reporter_name }}</strong>
+            </div>
+
+            <div class="information-item">
+                <span class="information-label">Contact Phone</span>
+                <strong>{{ incident.phone }}</strong>
+            </div>
+
+            <div class="information-item">
+                <span class="information-label">Incident Location</span>
+                <strong>{{ incident.location }}</strong>
+            </div>
+
+            <div class="information-item">
+                <span class="information-label">Incident Category</span>
+                <strong>{{ incident.incident_type }}</strong>
+            </div>
+
+            <div class="information-item information-full">
+                <span class="information-label">Incident Description</span>
+                <div class="description-content">{{ incident.description }}</div>
+            </div>
+
+            <div class="information-item information-full">
+                <span class="information-label">Date Submitted</span>
+                <strong>{{ incident.created_at }}</strong>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MANAGEMENT FORMS -->
+    <div class="detail-management-grid">
+
+        <!-- STATUS UPDATE -->
+        <div class="detail-side-panel">
+            <div class="detail-panel-heading">
+                <div>
+                    <span class="detail-section-label">RECORD MANAGEMENT</span>
+                    <h2>Update Status</h2>
+                </div>
+                <span class="management-icon">↻</span>
+            </div>
+
+            <p class="form-description">
+                Update the current progress of this reported incident.
+            </p>
+
+            <form method="post" class="management-form">
+                <input type="hidden" name="action" value="status">
+
+                <label for="status">Incident Status</label>
+
+                <select id="status" name="status" required>
+                    {% for s in ['Pending','Under Review','Assigned','Resolved','Closed'] %}
+                    <option value="{{ s }}" {% if incident.status == s %}selected{% endif %}>
+                        {{ s }}
+                    </option>
+                    {% endfor %}
+                </select>
+
+                <button class="button action-button" type="submit">
+                    Save Status
+                </button>
+            </form>
+
+            <div class="status-guide">
+                <h3>Status Guide</h3>
+                <div><span class="guide-dot guide-pending"></span> Pending</div>
+                <div><span class="guide-dot guide-review"></span> Under Review</div>
+                <div><span class="guide-dot guide-assigned"></span> Assigned</div>
+                <div><span class="guide-dot guide-resolved"></span> Resolved</div>
+                <div><span class="guide-dot guide-closed"></span> Closed</div>
+            </div>
+        </div>
+
+        <!-- DISPATCH SERVICE -->
+        <div class="detail-side-panel dispatch-panel">
+            <div class="detail-panel-heading">
+                <div>
+                    <span class="detail-section-label">EMERGENCY RESPONSE</span>
+                    <h2>Dispatch Service</h2>
+                </div>
+                <span class="management-icon dispatch-icon">🚒</span>
+            </div>
+
+            <p class="form-description">
+                Assign an active response team to attend to this incident.
+                Successful assignment automatically changes the incident status to Assigned.
+            </p>
+
+            <form method="post" class="management-form">
+                <input type="hidden" name="action" value="assign">
+
+                <label for="team_id">Select Response Team</label>
+
+                <select id="team_id" name="team_id" required>
+                    <option value="">Choose a response team</option>
+
+                    {% for team in response_teams %}
+                    <option value="{{ team.id }}" {% if team.member_count == 0 %}disabled{% endif %}>
+                        {{ team.team_name }} — {{ team.station }}
+                        ({{ team.member_count }} firefighters)
+                        {% if team.member_count == 0 %} - No members{% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+
+                {% if not response_teams %}
+                <p class="no-teams-message">
+                    No active response teams are currently registered.
+                </p>
+                {% endif %}
+
+                <label for="assignment_notes">Assignment Instructions</label>
+
+                <textarea
+                    id="assignment_notes"
+                    name="assignment_notes"
+                    rows="4"
+                    placeholder="Enter dispatch instructions, incident details or special directions..."
+                ></textarea>
+
+                <button
+                    class="button action-button dispatch-button"
+                    type="submit"
+                    {% if not response_teams or not response_teams|selectattr('member_count', 'gt', 0)|list %}disabled{% endif %}
+                >
+                    Assign Response Team
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- ASSIGNMENT HISTORY -->
+    <div class="detail-main-panel history-panel">
+        <div class="detail-panel-heading">
+            <div>
+                <span class="detail-section-label">DISPATCH RECORDS</span>
+                <h2>Assignment History</h2>
+            </div>
+            <span class="history-count">{{ assignments|length }} record(s)</span>
+        </div>
+
+        <div class="history-table-wrap">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Response Team</th>
+                        <th>Station</th>
+                        <th>Assigned By</th>
+                        <th>Date Assigned</th>
+                        <th>Instructions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for a in assignments %}
+                    <tr>
+                        <td><strong>{{ a.team_name }}</strong></td>
+                        <td>{{ a.station }}</td>
+                        <td>{{ a.assigned_by_name }}</td>
+                        <td>{{ a.assigned_at }}</td>
+                        <td>{{ a.assignment_notes or 'No instructions' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="empty-history">
+                            No response team has been assigned to this incident yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</section>
+
+<style>
+.incident-detail-page {
+    width: 100%;
+    color: #edf2f7;
+}
+
+.detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.detail-eyebrow,
+.detail-section-label {
+    display: block;
+    color: #ff762f;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+    margin-bottom: 9px;
+}
+
+.detail-header h1 {
+    color: #f5f7fa;
+    font-size: 28px;
+    margin: 0 0 8px;
+}
+
+.detail-subtitle,
+.form-description {
+    color: #aab5c4;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.detail-reference {
+    padding: 13px 17px;
+    background: #151d29;
+    border: 1px solid #35445a;
+    border-radius: 9px;
+}
+
+.detail-reference span {
+    display: block;
+    color: #8996a8;
+    font-size: 10px;
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+
+.detail-reference strong {
+    color: #ff914f;
+    font-size: 17px;
+}
+
+.detail-main-panel,
+.detail-side-panel {
+    background: #151d29;
+    border: 1px solid #293548;
+    border-radius: 13px;
+    padding: 24px;
+    margin-bottom: 22px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.12);
+    min-width: 0;
+}
+
+.detail-panel-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 22px;
+}
+
+.detail-panel-heading h2 {
+    color: #f5f7fa;
+    font-size: 19px;
+    margin: 0;
+}
+
+.detail-status {
+    padding: 7px 11px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.detail-pending { background: rgba(245,158,11,.14); color: #fbbf24; }
+.detail-review { background: rgba(59,130,246,.14); color: #60a5fa; }
+.detail-assigned { background: rgba(168,85,247,.14); color: #c084fc; }
+.detail-resolved { background: rgba(34,197,94,.14); color: #4ade80; }
+.detail-closed, .detail-other { background: rgba(148,163,184,.14); color: #cbd5e1; }
+
+.incident-information-grid {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 0 20px;
+}
+
+.information-item {
+    padding: 16px 0;
+    border-bottom: 1px solid #293548;
+    min-width: 0;
+}
+
+.information-full {
+    grid-column: 1 / -1;
+}
+
+.information-label {
+    display: block;
+    color: #8996a8;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .7px;
+    margin-bottom: 9px;
+}
+
+.information-item strong {
+    color: #e8edf4;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.description-content {
+    padding: 14px;
+    background: #0d1420;
+    border: 1px solid #293548;
+    border-radius: 8px;
+    color: #dce3ec;
+    font-size: 13px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.detail-management-grid {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 22px;
+    align-items: stretch;
+}
+
+.detail-management-grid .detail-side-panel {
+    margin-bottom: 22px;
+}
+
+.management-icon {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    background: #263244;
+    color: #ff762f;
+    border-radius: 9px;
+    font-size: 21px;
+}
+
+.dispatch-icon {
+    background: rgba(255,118,47,.13);
+}
+
+.management-form {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+}
+
+.management-form label {
+    color: #dce3ec;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.management-form select,
+.management-form textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    background: #0d1420;
+    color: #f5f7fa;
+    border: 1px solid #35445a;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+}
+
+.management-form textarea {
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.management-form select:focus,
+.management-form textarea:focus {
+    outline: none;
+    border-color: #ff762f;
+}
+
+.action-button {
+    width: 100%;
+    padding: 13px;
+    margin-top: 8px;
+    background: #ff762f;
+    color: #111827;
+    border: none;
+    border-radius: 8px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.action-button:hover {
+    background: #ff914f;
+}
+
+.action-button:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.dispatch-button {
+    background: #ff762f;
+}
+
+.status-guide {
+    margin-top: 27px;
+    padding-top: 19px;
+    border-top: 1px solid #293548;
+}
+
+.status-guide h3 {
+    color: #f5f7fa;
+    font-size: 14px;
+    margin: 0 0 15px;
+}
+
+.status-guide div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #aab5c4;
+    font-size: 12px;
+    margin-bottom: 11px;
+}
+
+.guide-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.guide-pending { background: #fbbf24; }
+.guide-review { background: #60a5fa; }
+.guide-assigned { background: #c084fc; }
+.guide-resolved { background: #4ade80; }
+.guide-closed { background: #94a3b8; }
+
+.no-teams-message {
+    color: #fbbf24;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.history-panel {
+    margin-top: 0;
+}
+
+.history-count {
+    color: #ff914f;
+    background: rgba(255,118,47,.12);
+    padding: 7px 11px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.history-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 650px;
+}
+
+.history-table th {
+    text-align: left;
+    padding: 14px 12px;
+    background: #0d1420;
+    color: #aab5c4;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+}
+
+.history-table td {
+    padding: 14px 12px;
+    color: #dce3ec;
+    font-size: 12px;
+    border-bottom: 1px solid #293548;
+    vertical-align: top;
+}
+
+.history-table td strong {
+    color: #ff914f;
+}
+
+.empty-history {
+    text-align: center;
+    padding: 28px !important;
+    color: #8996a8 !important;
+}
+
+@media (max-width: 850px) {
+    .detail-management-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .detail-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .detail-header h1 {
+        font-size: 23px;
+    }
+
+    .detail-main-panel,
+    .detail-side-panel {
+        padding: 17px;
+    }
+
+    .incident-information-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .information-full {
+        grid-column: auto;
+    }
+}
+</style>
+
+{% endblock %}

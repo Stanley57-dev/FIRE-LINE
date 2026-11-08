@@ -1,0 +1,368 @@
+
+{% extends "base.html" %}
+
+{% block title %}Report Incident | BLAZE DESK{% endblock %}
+
+{% block extra_css %}
+<style>
+.report-page {
+    color: #e9edf1;
+    padding: 30px 0 50px;
+}
+
+.report-header {
+    margin-bottom: 25px;
+}
+
+.report-eyebrow {
+    color: #ff762b;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 9px;
+}
+
+.report-header h1 {
+    color: #ffffff;
+    font-size: 28px;
+    margin: 0 0 10px;
+}
+
+.report-header p {
+    color: #aab4be;
+    font-size: 13px;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.report-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 290px;
+    gap: 22px;
+    align-items: start;
+}
+
+.report-form-panel,
+.report-info-panel {
+    background: #20272d;
+    border: 1px solid #343e47;
+    border-radius: 9px;
+    overflow: hidden;
+}
+
+.report-panel-header {
+    padding: 19px 22px;
+    border-bottom: 1px solid #39434c;
+}
+
+.report-panel-header h2 {
+    color: #ffffff;
+    font-size: 16px;
+    margin: 0 0 6px;
+}
+
+.report-panel-header p {
+    color: #9ba7b2;
+    font-size: 11px;
+    margin: 0;
+}
+
+.report-form {
+    padding: 23px;
+}
+
+.report-form label {
+    display: block;
+    color: #dce2e7;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 19px;
+}
+
+.report-form input,
+.report-form select,
+.report-form textarea {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    padding: 12px 13px;
+    background: #171d22;
+    color: #f1f3f5;
+    border: 1px solid #46515b;
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.report-form input:focus,
+.report-form select:focus,
+.report-form textarea:focus {
+    border-color: #ff762b;
+    box-shadow: 0 0 0 2px rgba(255, 118, 43, .12);
+}
+
+.report-form input::placeholder,
+.report-form textarea::placeholder {
+    color: #84919b;
+}
+
+.report-form select option {
+    background: #20272d;
+    color: #ffffff;
+}
+
+.report-form textarea {
+    resize: vertical;
+    min-height: 125px;
+    line-height: 1.6;
+}
+
+.required-mark {
+    color: #ff914f;
+}
+
+.report-submit {
+    display: inline-block;
+    width: 100%;
+    padding: 13px 18px;
+    background: #ff762b;
+    color: #171b1e;
+    border: none;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .5px;
+    cursor: pointer;
+    transition: background .2s;
+}
+
+.report-submit:hover {
+    background: #e9631d;
+}
+
+.report-info-panel {
+    padding: 21px;
+}
+
+.report-info-panel h2 {
+    color: #ffffff;
+    font-size: 15px;
+    margin: 0 0 17px;
+}
+
+.report-info-item {
+    padding: 14px 0;
+    border-bottom: 1px solid #39434c;
+}
+
+.report-info-item:last-child {
+    border-bottom: none;
+}
+
+.report-info-item strong {
+    display: block;
+    color: #ff914f;
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+.report-info-item p {
+    color: #aeb9c2;
+    font-size: 11px;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.report-warning {
+    margin-top: 17px;
+    background: #382b22;
+    border: 1px solid #68452f;
+    border-left: 3px solid #ff762b;
+    border-radius: 5px;
+    padding: 14px;
+    color: #e7c6ae;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+.report-warning strong {
+    display: block;
+    color: #ffad78;
+    margin-bottom: 5px;
+}
+
+@media (max-width: 850px) {
+    .report-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .report-page {
+        padding-top: 20px;
+    }
+
+    .report-header h1 {
+        font-size: 23px;
+    }
+
+    .report-form {
+        padding: 17px;
+    }
+
+    .report-info-panel {
+        padding: 17px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="report-page">
+
+    <div class="report-header">
+        <div class="report-eyebrow">FIRE LINE / INCIDENT REPORTING</div>
+        <h1>Fire Incident Report</h1>
+        <p>
+            Provide accurate information about the fire incident to support
+            timely assessment and coordinated emergency response.
+        </p>
+    </div>
+
+    <div class="report-layout">
+
+        <section class="report-form-panel">
+
+            <div class="report-panel-header">
+                <h2>Incident Information</h2>
+                <p>Fields marked <span class="required-mark">*</span> are required.</p>
+            </div>
+
+            <form method="post" class="report-form">
+
+                <label>
+                    Reporter name <span class="required-mark">*</span>
+                    <input
+                        type="text"
+                        name="reporter_name"
+                        required
+                        maxlength="120"
+                        placeholder="Enter your full name"
+                        value="{{ data.get('reporter_name','') }}"
+                    >
+                </label>
+
+                <label>
+                    Contact phone <span class="required-mark">*</span>
+                    <input
+                        type="tel"
+                        name="phone"
+                        required
+                        maxlength="30"
+                        placeholder="Enter your contact phone number"
+                        value="{{ data.get('phone','') }}"
+                    >
+                </label>
+
+                <label>
+                    Incident location <span class="required-mark">*</span>
+                    <input
+                        type="text"
+                        name="location"
+                        required
+                        maxlength="255"
+                        placeholder="Enter the exact location of the incident"
+                        value="{{ data.get('location','') }}"
+                    >
+                </label>
+
+                <label>
+                    Incident category <span class="required-mark">*</span>
+
+                    <select name="incident_type" required>
+                        <option value="">Select category</option>
+
+                        {% for item in ['Residential fire','Commercial fire','Market fire','Vehicle fire','Industrial fire','Other'] %}
+
+                        <option value="{{ item }}"
+                            {% if data.get('incident_type') == item %}selected{% endif %}>
+                            {{ item }}
+                        </option>
+
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <label>
+                    Incident description <span class="required-mark">*</span>
+                    <textarea
+                        name="description"
+                        rows="5"
+                        required
+                        placeholder="Describe the fire, nearby landmarks, visible dangers and any other relevant information..."
+                    >{{ data.get('description','') }}</textarea>
+                </label>
+
+                <button class="report-submit" type="submit">
+                    SUBMIT INCIDENT REPORT
+                </button>
+
+            </form>
+
+        </section>
+
+        <aside>
+
+            <div class="report-info-panel">
+
+                <h2>Reporting Guidelines</h2>
+
+                <div class="report-info-item">
+                    <strong>01. Accurate Contact Details</strong>
+                    <p>
+                        Provide a valid phone number so the appropriate
+                        personnel can contact you if more information is needed.
+                    </p>
+                </div>
+
+                <div class="report-info-item">
+                    <strong>02. Exact Incident Location</strong>
+                    <p>
+                        Include the street, area, community or nearby
+                        landmarks to help responders locate the incident.
+                    </p>
+                </div>
+
+                <div class="report-info-item">
+                    <strong>03. Clear Description</strong>
+                    <p>
+                        Explain what is burning, the apparent size of the fire
+                        and any visible hazards.
+                    </p>
+                </div>
+
+                <div class="report-info-item">
+                    <strong>04. Correct Classification</strong>
+                    <p>
+                        Select the incident category that best describes
+                        the reported emergency.
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="report-warning">
+                <strong>Emergency Notice</strong>
+                This academic prototype is not monitored as an emergency
+                hotline. For an active fire, contact the appropriate
+                official emergency service immediately.
+            </div>
+
+        </aside>
+
+    </div>
+
+</div>
+{% endblock %}

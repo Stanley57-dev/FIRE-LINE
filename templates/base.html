@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>{% block title %}FIRE LINE | Fire Incident Management{% endblock %}</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <style>
+    .topbar {
+      background: #101923;
+      min-height: 76px;
+      padding: 12px 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      border-bottom: 3px solid #f47721;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 25px;
+      font-weight: 800;
+      letter-spacing: 2px;
+    }
+
+    .brand-logo {
+      width: 43px;
+      height: 43px;
+      background: #f47721;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .brand-logo svg {
+      width: 29px;
+      height: 29px;
+    }
+
+    .brand span {
+      color: #f47721;
+    }
+
+    .topbar nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .topbar nav a {
+      color: #e6edf4;
+      text-decoration: none;
+      padding: 10px 13px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: 0.2s ease;
+    }
+
+    .topbar nav a:hover {
+      background: #f47721;
+      color: #fff;
+    }
+
+    footer {
+      text-align: center;
+      padding: 22px 15px;
+      color: #9ba8b5;
+      font-size: 13px;
+    }
+
+    @media (max-width: 700px) {
+      .topbar {
+        justify-content: center;
+      }
+
+      .topbar nav {
+        justify-content: center;
+      }
+
+      .topbar nav a {
+        padding: 9px;
+        font-size: 13px;
+      }
+    }
+  </style>
+
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+<header class="topbar">
+
+  <a class="brand" href="{{ url_for('index') }}">
+    <div class="brand-logo">
+      <svg viewBox="0 0 24 24" fill="none"
+           xmlns="http://www.w3.org/2000/svg">
+        <path d="M13.5 2.5C14.2 6.1 11.2 7.2 12.1 10.1
+                 C10.8 9.4 10.1 8.1 10.3 6.8
+                 C7.8 9.1 6 11.4 6 14.5
+                 C6 18.4 8.7 21 12 21
+                 C15.8 21 18 18.3 18 14.7
+                 C18 10.1 14.7 7.1 13.5 2.5Z"
+              fill="white"/>
+        <path d="M12.2 12.2C12.5 14 10.6 14.9 10.8 16.5
+                 C10.9 17.7 11.8 18.5 12.8 18.5
+                 C14.1 18.5 15 17.4 15 16.1
+                 C15 14.6 13.9 13.3 12.2 12.2Z"
+              fill="#f47721"/>
+      </svg>
+    </div>
+
+    FIRE <span>LINE</span>
+  </a>
+
+  <nav>
+    <a href="{{ url_for('index') }}">Home</a>
+    <a href="{{ url_for('report_incident') }}">Report Incident</a>
+       
+
+ 
+    {% if session.get('role') == 'admin' %}
+      <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('response_teams') }}">Response Teams</a>
+      <a href="{{ url_for('dispatch') }}">Dispatch</a>
+      <a href="{{ url_for('firefighters') }}">Firefighters</a>
+         <a href="{{ url_for('reports') }}">Reports</a>
+      <a href="{{ url_for('logout') }}">Logout</a>
+    {% else %}
+      <a href="{{ url_for('login') }}">Admin Login</a>
+    {% endif %}
+  </nav>
+
+</header>
+
+<main class="container">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="notice {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+
+</main>
+
+<footer>
+  FIRE LINE &copy; 2026 — Academic prototype, not an official emergency dispatch service.
+</footer>
+
+</body>
+</html>

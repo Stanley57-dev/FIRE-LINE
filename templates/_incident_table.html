@@ -1,0 +1,201 @@
+
+<div class="table-wrap incident-records-wrap">
+    <table class="incident-records-table">
+        <thead>
+            <tr>
+                <th>Reference</th>
+                <th>Reporter</th>
+                <th>Location</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for i in incidents %}
+            <tr>
+                <td class="incident-reference">
+                    FIR-{{ "%05d"|format(i.id) }}
+                </td>
+
+                <td>{{ i.reporter_name }}</td>
+                <td>{{ i.location }}</td>
+                <td>{{ i.incident_type }}</td>
+
+                <td>
+                    {% if i.status == 'Pending' %}
+                        <span class="incident-status status-pending">{{ i.status }}</span>
+                    {% elif i.status == 'Under Review' %}
+                        <span class="incident-status status-review">{{ i.status }}</span>
+                    {% elif i.status == 'Assigned' %}
+                        <span class="incident-status status-assigned">{{ i.status }}</span>
+                    {% elif i.status == 'Resolved' %}
+                        <span class="incident-status status-resolved">{{ i.status }}</span>
+                    {% elif i.status == 'Closed' %}
+                        <span class="incident-status status-closed">{{ i.status }}</span>
+                    {% else %}
+                        <span class="incident-status status-other">{{ i.status }}</span>
+                    {% endif %}
+                </td>
+
+                <td class="incident-date">{{ i.created_at }}</td>
+
+                <td>
+                    <a
+                        class="incident-view-link"
+                        href="{{ url_for('incident_detail', incident_id=i.id) }}"
+                    >
+                        View Details →
+                    </a>
+                </td>
+            </tr>
+
+            {% else %}
+            <tr>
+                <td colspan="7" class="incident-empty">
+                    <span class="empty-symbol">📋</span>
+                    <strong>No Incident Records Found</strong>
+                    <p>There are currently no incident records to display.</p>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+.incident-records-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #293548;
+    border-radius: 10px;
+}
+
+.incident-records-table {
+    width: 100%;
+    min-width: 850px;
+    border-collapse: collapse;
+    background: #151d29;
+}
+
+.incident-records-table th {
+    padding: 15px 13px;
+    background: #202b3b;
+    color: #aeb9c8;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    white-space: nowrap;
+}
+
+.incident-records-table td {
+    padding: 15px 13px;
+    color: #dce3ec;
+    font-size: 13px;
+    border-bottom: 1px solid #293548;
+    vertical-align: middle;
+}
+
+.incident-records-table tbody tr:hover {
+    background: #1b2635;
+}
+
+.incident-records-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.incident-reference {
+    color: #ff914f !important;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.incident-date {
+    color: #aab5c4 !important;
+    white-space: nowrap;
+}
+
+.incident-status {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.status-pending {
+    background: rgba(245, 158, 11, 0.14);
+    color: #fbbf24;
+}
+
+.status-review {
+    background: rgba(59, 130, 246, 0.14);
+    color: #60a5fa;
+}
+
+.status-assigned {
+    background: rgba(168, 85, 247, 0.14);
+    color: #c084fc;
+}
+
+.status-resolved {
+    background: rgba(34, 197, 94, 0.14);
+    color: #4ade80;
+}
+
+.status-closed {
+    background: rgba(148, 163, 184, 0.14);
+    color: #cbd5e1;
+}
+
+.status-other {
+    background: rgba(148, 163, 184, 0.14);
+    color: #cbd5e1;
+}
+
+.incident-view-link {
+    display: inline-block;
+    padding: 7px 11px;
+    background: rgba(255, 118, 47, 0.12);
+    color: #ff914f;
+    border: 1px solid rgba(255, 118, 47, 0.25);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.incident-view-link:hover {
+    background: #ff762f;
+    color: #111827;
+}
+
+.incident-empty {
+    padding: 35px 15px !important;
+    text-align: center;
+}
+
+.empty-symbol {
+    display: block;
+    font-size: 27px;
+    margin-bottom: 10px;
+}
+
+.incident-empty strong {
+    display: block;
+    color: #f5f7fa;
+    font-size: 14px;
+}
+
+.incident-empty p {
+    color: #aab5c4;
+    font-size: 12px;
+    margin: 7px 0 0;
+}
+</style>

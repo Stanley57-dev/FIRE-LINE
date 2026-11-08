@@ -1,0 +1,398 @@
+
+{% extends "base.html" %}
+
+{% block title %}Firefighter Management | FIRE LINE{% endblock %}
+
+{% block content %}
+<section class="teams-page">
+
+    <div class="teams-header">
+        <div>
+            <p class="teams-eyebrow">EMERGENCY RESPONSE OPERATIONS</p>
+            <h1>Firefighter Management</h1>
+            <p>Register, organise and monitor emergency response personnel.</p>
+        </div>
+        <div class="teams-header-icon">👨‍🚒</div>
+    </div>
+
+    <div class="teams-panel create-team-panel">
+        <div class="panel-heading">
+            <div>
+                <span class="panel-label">PERSONNEL REGISTRATION</span>
+                <h2>Register New Firefighter</h2>
+            </div>
+            <span class="panel-icon">＋</span>
+        </div>
+
+        <form method="POST" action="{{ url_for('firefighters') }}" class="team-form">
+
+            <div class="team-form-grid">
+                <div class="team-field">
+                    <label for="full_name">Full Name</label>
+                    <input type="text" name="full_name" id="full_name"
+                           placeholder="Enter firefighter's full name" required>
+                </div>
+
+                <div class="team-field">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="username"
+                           placeholder="Create login username" required>
+                </div>
+
+                <div class="team-field">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password"
+                           placeholder="Minimum 10 characters"
+                           minlength="10" required>
+                </div>
+
+                <div class="team-field">
+                    <label for="phone">Phone Number</label>
+                    <input type="text" name="phone" id="phone"
+                           placeholder="Enter phone number" required>
+                </div>
+
+                <div class="team-field">
+                    <label for="firefighter_rank">Firefighter Rank</label>
+                    <input type="text" name="firefighter_rank"
+                           id="firefighter_rank"
+                           placeholder="e.g. Firefighter, Senior Firefighter"
+                           required>
+                </div>
+
+                <div class="team-field">
+                    <label for="station">Fire Station</label>
+                    <input type="text" name="station" id="station"
+                           placeholder="Enter assigned fire station" required>
+                </div>
+            </div>
+
+            <button type="submit" class="button create-team-button">
+                <span>＋</span> Register Firefighter
+            </button>
+        </form>
+    </div>
+
+    <div class="teams-panel registered-teams-panel">
+        <div class="panel-heading">
+            <div>
+                <span class="panel-label">PERSONNEL DIRECTORY</span>
+                <h2>Registered Firefighters</h2>
+            </div>
+            <span class="panel-icon">👨‍🚒</span>
+        </div>
+
+        {% if firefighters %}
+        <div class="teams-table-wrap">
+            <table class="teams-table">
+                <thead>
+                    <tr>
+                        <th>Full Name</th>
+                        <th>Username</th>
+                        <th>Phone</th>
+                        <th>Rank</th>
+                        <th>Station</th>
+                        <th>Availability</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for firefighter in firefighters %}
+                    <tr>
+                        <td class="team-name-cell">
+                            <span class="team-indicator"></span>
+                            {{ firefighter.full_name }}
+                        </td>
+                        <td>{{ firefighter.username }}</td>
+                        <td>{{ firefighter.phone }}</td>
+                        <td>{{ firefighter.firefighter_rank }}</td>
+                        <td>{{ firefighter.station }}</td>
+                        <td>
+                            {% if firefighter.availability == 'Available' %}
+                                <span class="team-status status-active">
+                                    {{ firefighter.availability }}
+                                </span>
+                            {% elif firefighter.availability == 'Unavailable' %}
+                                <span class="team-status status-inactive">
+                                    {{ firefighter.availability }}
+                                </span>
+                            {% else %}
+                                <span class="team-status status-other">
+                                    {{ firefighter.availability }}
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% else %}
+        <div class="teams-empty-state">
+            <span class="empty-icon">👨‍🚒</span>
+            <h3>No Firefighters Registered Yet</h3>
+            <p>No firefighters have been registered. Add your first firefighter using the form above.</p>
+        </div>
+        {% endif %}
+    </div>
+
+</section>
+
+<style>
+.teams-page {
+    width: 100%;
+    color: #edf2f7;
+}
+
+.teams-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.teams-eyebrow,
+.panel-label {
+    color: #ff762f;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.8px;
+    margin: 0 0 9px;
+}
+
+.teams-header h1 {
+    color: #f5f7fa;
+    font-size: 29px;
+    margin: 0 0 8px;
+}
+
+.teams-header p:not(.teams-eyebrow) {
+    color: #aab5c4;
+    margin: 0;
+    font-size: 14px;
+}
+
+.teams-header-icon {
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    background: rgba(255, 118, 47, 0.12);
+    border: 1px solid rgba(255, 118, 47, 0.25);
+    border-radius: 13px;
+    font-size: 27px;
+}
+
+.teams-panel {
+    background: #151d29;
+    border: 1px solid #293548;
+    border-radius: 13px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.13);
+}
+
+.panel-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 23px;
+}
+
+.panel-heading h2 {
+    color: #f5f7fa;
+    font-size: 19px;
+    margin: 0;
+}
+
+.panel-icon {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    background: #263244;
+    color: #ff762f;
+    border-radius: 9px;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.team-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.team-field {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.team-field label {
+    color: #dce3ec;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.team-field input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 13px 14px;
+    background: #0d1420;
+    border: 1px solid #35445a;
+    border-radius: 8px;
+    color: #f5f7fa;
+    font-size: 14px;
+    outline: none;
+}
+
+.team-field input::placeholder {
+    color: #718096;
+}
+
+.team-field input:focus {
+    border-color: #ff762f;
+    box-shadow: 0 0 0 3px rgba(255, 118, 47, 0.12);
+}
+
+.create-team-button {
+    margin-top: 23px;
+    padding: 12px 20px;
+    background: #ff762f;
+    color: #111827;
+    border: none;
+    border-radius: 8px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.create-team-button:hover {
+    background: #ff914f;
+}
+
+.teams-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.teams-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 750px;
+}
+
+.teams-table th {
+    padding: 14px 16px;
+    background: #202b3b;
+    color: #aeb9c8;
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    white-space: nowrap;
+}
+
+.teams-table td {
+    padding: 16px;
+    color: #dce3ec;
+    border-bottom: 1px solid #293548;
+    font-size: 13px;
+}
+
+.teams-table tbody tr:hover {
+    background: #1b2635;
+}
+
+.teams-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.team-name-cell {
+    color: #f5f7fa !important;
+    font-weight: 700;
+}
+
+.team-indicator {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    background: #ff762f;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.team-status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.status-active {
+    background: rgba(34, 197, 94, 0.13);
+    color: #4ade80;
+}
+
+.status-inactive {
+    background: rgba(239, 68, 68, 0.13);
+    color: #f87171;
+}
+
+.status-other {
+    background: rgba(148, 163, 184, 0.13);
+    color: #cbd5e1;
+}
+
+.teams-empty-state {
+    text-align: center;
+    padding: 40px 15px;
+    border: 1px dashed #35445a;
+    border-radius: 10px;
+}
+
+.empty-icon {
+    font-size: 35px;
+}
+
+.teams-empty-state h3 {
+    color: #f5f7fa;
+    margin: 13px 0 7px;
+}
+
+.teams-empty-state p {
+    color: #aab5c4;
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+@media (max-width: 650px) {
+    .teams-header h1 {
+        font-size: 23px;
+    }
+
+    .teams-header-icon {
+        width: 46px;
+        height: 46px;
+        font-size: 22px;
+    }
+
+    .teams-panel {
+        padding: 18px;
+    }
+
+    .team-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .create-team-button {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

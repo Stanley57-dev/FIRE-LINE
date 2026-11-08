@@ -1,0 +1,267 @@
+
+{% extends "base.html" %}
+
+{% block title %}Incident Reports | BLAZE DESK{% endblock %}
+
+{% block extra_css %}
+<style>
+.reports-page {
+    color: #e9edf1;
+    padding: 30px 0 50px;
+}
+
+.reports-header {
+    margin-bottom: 27px;
+}
+
+.reports-eyebrow {
+    color: #ff762b;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 9px;
+}
+
+.reports-header h1 {
+    color: #ffffff;
+    font-size: 28px;
+    margin: 0 0 9px;
+}
+
+.reports-header p {
+    color: #aab4be;
+    font-size: 13px;
+    margin: 0;
+    line-height: 1.7;
+}
+
+.reports-panel {
+    background: #20272d;
+    border: 1px solid #343e47;
+    border-radius: 9px;
+    overflow: hidden;
+}
+
+.reports-panel-header {
+    padding: 19px 22px;
+    border-bottom: 1px solid #39434c;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.reports-panel-header h2 {
+    color: #ffffff;
+    font-size: 16px;
+    margin: 0;
+}
+
+.report-label {
+    background: #382b22;
+    border: 1px solid #68452f;
+    color: #ffad78;
+    border-radius: 4px;
+    padding: 7px 11px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .5px;
+}
+
+.reports-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.reports-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 520px;
+}
+
+.reports-table th {
+    background: #171d22;
+    color: #ff914f;
+    text-align: left;
+    padding: 15px 18px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .7px;
+    border-bottom: 1px solid #414b54;
+}
+
+.reports-table td {
+    padding: 15px 18px;
+    color: #d5dce2;
+    font-size: 13px;
+    border-bottom: 1px solid #343e47;
+}
+
+.reports-table tbody tr:hover {
+    background: #29323a;
+}
+
+.reports-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.report-category {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.report-status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    background: #343c43;
+    color: #d5dce2;
+}
+
+.report-status.pending {
+    background: #4b3923;
+    color: #ffc16d;
+}
+
+.report-status.review {
+    background: #263d58;
+    color: #91baff;
+}
+
+.report-status.assigned {
+    background: #293f55;
+    color: #8bc5ff;
+}
+
+.report-status.resolved {
+    background: #214334;
+    color: #83d8a8;
+}
+
+.report-status.closed {
+    background: #343c43;
+    color: #c1cbd3;
+}
+
+.report-total {
+    color: #ff914f !important;
+    font-weight: 700;
+    font-size: 14px !important;
+}
+
+.reports-empty {
+    text-align: center;
+    color: #aab4be !important;
+    padding: 35px 15px !important;
+}
+
+@media(max-width: 600px) {
+    .reports-page {
+        padding-top: 20px;
+    }
+
+    .reports-header h1 {
+        font-size: 23px;
+    }
+
+    .reports-panel-header {
+        padding: 15px;
+    }
+
+    .reports-table th,
+    .reports-table td {
+        padding: 12px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="reports-page">
+
+    <div class="reports-header">
+        <div class="reports-eyebrow">BLAZE DESK / REPORTING</div>
+        <h1>Incident Summary Report</h1>
+        <p>
+            Review recorded fire incidents grouped by category and current status.
+        </p>
+    </div>
+
+    <section class="reports-panel">
+
+        <div class="reports-panel-header">
+            <h2>Incident Records Summary</h2>
+            <span class="report-label">SUMMARY REPORT</span>
+        </div>
+
+        <div class="reports-table-wrap">
+
+            <table class="reports-table">
+
+                <thead>
+                    <tr>
+                        <th>Incident Category</th>
+                        <th>Status</th>
+                        <th>Total Records</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for r in rows %}
+
+                    <tr>
+                        <td class="report-category">
+                            {{ r.incident_type }}
+                        </td>
+
+                        <td>
+                            {% if r.status == 'Pending' %}
+                                <span class="report-status pending">Pending</span>
+
+                            {% elif r.status == 'Under Review' %}
+                                <span class="report-status review">Under Review</span>
+
+                            {% elif r.status == 'Assigned' %}
+                                <span class="report-status assigned">Assigned</span>
+
+                            {% elif r.status == 'Resolved' %}
+                                <span class="report-status resolved">Resolved</span>
+
+                            {% elif r.status == 'Closed' %}
+                                <span class="report-status closed">Closed</span>
+
+                            {% else %}
+                                <span class="report-status">{{ r.status }}</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="report-total">
+                            {{ r.total }}
+                        </td>
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+                        <td colspan="3" class="reports-empty">
+                            No records available.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+</div>
+{% endblock %}

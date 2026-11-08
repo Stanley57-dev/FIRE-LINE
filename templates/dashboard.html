@@ -1,0 +1,238 @@
+
+{% extends "base.html" %}
+
+{% block title %}Administrator Dashboard | BLAZE DESK{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-page {
+        color: #f1f3f5;
+        padding: 30px 0 50px;
+    }
+
+    .dashboard-heading {
+        margin-bottom: 28px;
+    }
+
+    .dashboard-heading .eyebrow {
+        color: #ff762b;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        margin-bottom: 8px;
+    }
+
+    .dashboard-heading h1 {
+        color: #ffffff;
+        font-size: 30px;
+        margin: 0 0 8px;
+    }
+
+    .dashboard-heading p {
+        color: #aeb6bd;
+        margin: 0;
+    }
+
+    .dashboard-stat {
+        background: #20272d;
+        border: 1px solid #343d45;
+        border-left: 4px solid #ff762b;
+        border-radius: 10px;
+        padding: 24px;
+        margin-bottom: 32px;
+        max-width: 380px;
+    }
+
+    .dashboard-stat span {
+        display: block;
+        color: #b8c0c7;
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+
+    .dashboard-stat strong {
+        display: block;
+        color: #ff762b;
+        font-size: 36px;
+        line-height: 1;
+    }
+
+    .dashboard-section {
+        background: #20272d;
+        border: 1px solid #343d45;
+        border-radius: 10px;
+        padding: 24px;
+        margin-bottom: 25px;
+    }
+
+    .dashboard-section h2 {
+        color: #ffffff;
+        font-size: 19px;
+        margin: 0 0 18px;
+    }
+
+    .status-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .status-chip {
+        background: #2b343c;
+        border: 1px solid #414c55;
+        border-radius: 6px;
+        color: #e8edf1;
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+
+    .status-chip strong {
+        color: #ff914f;
+        margin-left: 5px;
+    }
+
+    .dashboard-search {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 25px;
+    }
+
+    .dashboard-search input {
+        flex: 1;
+        min-width: 0;
+        background: #171d22;
+        border: 1px solid #46515a;
+        border-radius: 6px;
+        color: #ffffff;
+        padding: 13px 15px;
+        font-size: 14px;
+        outline: none;
+    }
+
+    .dashboard-search input:focus {
+        border-color: #ff762b;
+        box-shadow: 0 0 0 2px rgba(255, 118, 43, 0.15);
+    }
+
+    .dashboard-search input::placeholder {
+        color: #89939c;
+    }
+
+    .dashboard-search button {
+        background: #ff762b;
+        border: 1px solid #ff762b;
+        border-radius: 6px;
+        color: #171717;
+        padding: 12px 24px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .dashboard-search button:hover {
+        background: #e9631d;
+        border-color: #e9631d;
+    }
+
+    .incident-table-area {
+        overflow-x: auto;
+    }
+
+    .incident-table-area table {
+        width: 100%;
+        min-width: 650px;
+        border-collapse: collapse;
+        color: #e8edf1;
+    }
+
+    .incident-table-area th {
+        background: #171d22;
+        color: #ff914f;
+        text-align: left;
+        padding: 14px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        border-bottom: 1px solid #414c55;
+    }
+
+    .incident-table-area td {
+        padding: 14px;
+        border-bottom: 1px solid #343d45;
+        font-size: 13px;
+    }
+
+    .incident-table-area tr:hover td {
+        background: #29323a;
+    }
+
+    @media (max-width: 600px) {
+        .dashboard-page {
+            padding-top: 20px;
+        }
+
+        .dashboard-heading h1 {
+            font-size: 24px;
+        }
+
+        .dashboard-section {
+            padding: 17px;
+        }
+
+        .dashboard-search {
+            flex-direction: column;
+        }
+
+        .dashboard-search button {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+
+    <div class="dashboard-heading">
+        <p class="eyebrow">FIRE LINE / ADMINISTRATION</p>
+        <h1>Administrator Dashboard</h1>
+        <p>Monitor reported fire incidents and manage response activities.</p>
+    </div>
+
+    <div class="dashboard-stat">
+        <span>Total recorded incidents</span>
+        <strong>{{ total }}</strong>
+    </div>
+
+    <section class="dashboard-section">
+        <h2>Incident Status Summary</h2>
+
+        <div class="status-chips">
+            {% for item in status_counts %}
+                <span class="status-chip">
+                    {{ item.status }}:
+                    <strong>{{ item.amount }}</strong>
+                </span>
+            {% endfor %}
+        </div>
+    </section>
+
+    <form action="{{ url_for('search') }}" method="get" class="dashboard-search">
+        <input
+            type="text"
+            name="q"
+            placeholder="Search reference, reporter, location or category"
+            aria-label="Search incidents"
+        >
+        <button type="submit">Search Incidents</button>
+    </form>
+
+    <section class="dashboard-section">
+        <h2>Recent Incidents</h2>
+
+        <div class="incident-table-area">
+            {% include "_incident_table.html" %}
+        </div>
+    </section>
+
+</div>
+{% endblock %}
