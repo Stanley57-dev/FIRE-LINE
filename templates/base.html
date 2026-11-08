@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -40,6 +41,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
 
     .brand-logo svg {
@@ -73,6 +75,43 @@
       color: #fff;
     }
 
+    /* Hamburger button - hidden on desktop */
+    .menu-toggle {
+      display: none;
+      width: 44px;
+      height: 44px;
+      border: 1px solid #344454;
+      border-radius: 8px;
+      background: #192633;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .menu-toggle span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: #fff;
+      border-radius: 5px;
+      transition: 0.25s ease;
+    }
+
+    /* Animate hamburger into X */
+    .menu-toggle.active span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    .menu-toggle.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .menu-toggle.active span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
     footer {
       text-align: center;
       padding: 22px 15px;
@@ -80,18 +119,42 @@
       font-size: 13px;
     }
 
+    /* Mobile navigation */
     @media (max-width: 700px) {
       .topbar {
-        justify-content: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 12px 5%;
+      }
+
+      .brand {
+        font-size: 22px;
+      }
+
+      .menu-toggle {
+        display: flex;
       }
 
       .topbar nav {
-        justify-content: center;
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        gap: 5px;
+        padding: 12px 0 5px;
+        border-top: 1px solid #344454;
+      }
+
+      .topbar nav.open {
+        display: flex;
       }
 
       .topbar nav a {
-        padding: 9px;
-        font-size: 13px;
+        display: block;
+        width: 100%;
+        padding: 12px 14px;
+        font-size: 14px;
+        border-radius: 6px;
       }
     }
   </style>
@@ -125,22 +188,36 @@
     FIRE <span>LINE</span>
   </a>
 
-  <nav>
+  <!-- Mobile hamburger button -->
+  <button
+    class="menu-toggle"
+    id="menuToggle"
+    type="button"
+    aria-label="Open navigation menu"
+    aria-expanded="false"
+    aria-controls="mainNavigation"
+  >
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <nav id="mainNavigation">
+
     <a href="{{ url_for('index') }}">Home</a>
     <a href="{{ url_for('report_incident') }}">Report Incident</a>
-       
 
- 
     {% if session.get('role') == 'admin' %}
       <a href="{{ url_for('dashboard') }}">Dashboard</a>
       <a href="{{ url_for('response_teams') }}">Response Teams</a>
       <a href="{{ url_for('dispatch') }}">Dispatch</a>
       <a href="{{ url_for('firefighters') }}">Firefighters</a>
-         <a href="{{ url_for('reports') }}">Reports</a>
+      <a href="{{ url_for('reports') }}">Reports</a>
       <a href="{{ url_for('logout') }}">Logout</a>
     {% else %}
       <a href="{{ url_for('login') }}">Admin Login</a>
     {% endif %}
+
   </nav>
 
 </header>
@@ -162,6 +239,32 @@
 <footer>
   FIRE LINE &copy; 2026 — Academic prototype, not an official emergency dispatch service.
 </footer>
+
+<script>
+  const menuToggle = document.getElementById("menuToggle");
+  const mainNavigation = document.getElementById("mainNavigation");
+
+  menuToggle.addEventListener("click", function () {
+    const isOpen = mainNavigation.classList.toggle("open");
+
+    menuToggle.classList.toggle("active", isOpen);
+    menuToggle.setAttribute("aria-expanded", isOpen);
+    menuToggle.setAttribute(
+      "aria-label",
+      isOpen ? "Close navigation menu" : "Open navigation menu"
+    );
+  });
+
+  // Close menu after selecting a navigation link
+  mainNavigation.querySelectorAll("a").forEach(function (link) {
+    link.addEventListener("click", function () {
+      mainNavigation.classList.remove("open");
+      menuToggle.classList.remove("active");
+      menuToggle.setAttribute("aria-expanded", "false");
+      menuToggle.setAttribute("aria-label", "Open navigation menu");
+    });
+  });
+</script>
 
 </body>
 </html>
